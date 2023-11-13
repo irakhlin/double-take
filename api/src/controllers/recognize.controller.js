@@ -175,6 +175,7 @@ module.exports.start = async (req, res) => {
     ['matches', 'misses', 'unknowns'].forEach((type) =>
       loggedOutput[type].forEach((result) => delete result.base64)
     );
+    console.log('logging output1');
     console.log(loggedOutput);
 
     PROCESSING = false;
@@ -189,6 +190,7 @@ module.exports.start = async (req, res) => {
     if (results.length) emit('recognize', true);
   } catch (error) {
     PROCESSING = false;
+    console.log('error hit');
     console.log(error);
     // res.send(error);
   }

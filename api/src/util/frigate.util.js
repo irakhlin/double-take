@@ -5,26 +5,18 @@ const frigate = this;
 
 module.exports.subLabel = async (topic, id, best) => {
   if (!FRIGATE.URL || !FRIGATE.UPDATE_SUB_LABELS || !best.length) {
-    console.error(`sublabel is not updating, conditions not met`)
+    console.log('sublabel is not updating, conditions not met');
     return;
   }
   const names = best
     .map(({ name }) => name)
     .sort()
     .join(', ');
-  const confidences = Math.max(...best.map(({ confidence }) => confidence)) / 100;
-  if (confidences < 0 || confidences > 1) {
-    throw new Error(
-      `Confidences must be greater than 0 and smaller than 1, but now it's ${confidences}`
-    );
-  }
   await axios({
     method: 'post',
     url: `${this.topicURL(topic)}/api/events/${id}/sub_label`,
     data: { subLabel: names },
-  }).catch((error) =>
-    console.error(`post sublabel to frigate for event ${id} error: ${error.message}`)
-  );
+  }).catch((error) => console.error(`sublabel error: ${error.message}`));
 };
 
 module.exports.checks = async ({
