@@ -44,9 +44,10 @@ const describeCollection = async () =>
   client.send(new DescribeCollectionCommand({ CollectionId: REKOGNITION.COLLECTION_ID }));
 
 const deleteFaces = async ({ faceIds }) =>
-  client.send(
-    new DeleteFacesCommand({ CollectionId: REKOGNITION.COLLECTION_ID, FaceIds: faceIds })
-  );
+  console.verbose('rekognition deleteFaces, id: %O', faceIds );
+  //client.send(
+  //  new DeleteFacesCommand({ CollectionId: REKOGNITION.COLLECTION_ID, FaceIds: faceIds })
+  //);
 
 const indexFaces = async ({ bytes }) =>
   client.send(
@@ -74,7 +75,9 @@ module.exports.recognize = async ({ key, test }) => {
   }));
 
   console.verbose('rekognition: recognize');
+  console.verbose
   awsRequests += 1;
+  console.verbose('rekognition: aws request number: %i', awsRequests);
   return {
     data: {
       ...(await searchFacesByImage({
@@ -88,14 +91,16 @@ module.exports.recognize = async ({ key, test }) => {
 module.exports.train = async ({ key }) => {
   console.verbose('rekognition: index');
   awsRequests += 1;
+  console.verbose('rekognition: aws request number: %i', awsRequests);
   return {
     data: { ...(await indexFaces({ bytes: fs.readFileSync(key) })) },
   };
 };
 
 module.exports.remove = ({ ids = [] }) => {
-  console.verbose('rekognition: delete faces');
+  console.verbose('rekognition: delete faces, ids: %O', ids);
   awsRequests += 1;
+  console.verbose('rekognition: aws request number: %i', awsRequests);
   const db = database.connect();
   const faceIds = !ids.length
     ? db
@@ -114,6 +119,7 @@ module.exports.remove = ({ ids = [] }) => {
         .all(ids)
         .map((obj) => obj.faceId);
 
+  console.verbose('rekognition: faceids to remove: %O', faceIds);
   if (faceIds.length) return deleteFaces({ faceIds });
 };
 
