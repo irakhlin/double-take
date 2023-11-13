@@ -177,7 +177,7 @@ module.exports.start = async (req, res) => {
     );
     console.log('logging output1');
     console.log(loggedOutput);
-
+    if (event.type === 'frigate') frigate.subLabel(event.topic, id, best);
     PROCESSING = false;
 
     res.send(output);
@@ -185,12 +185,11 @@ module.exports.start = async (req, res) => {
     recognize.save.latest(camera, best, misses, unknowns[0]);
     mqtt.recognize(output);
     notify.publish(output, camera, results);
-    if (event.type === 'frigate') frigate.subLabel(event.topic, id, best);
     if (output.matches.length) IDS.push(id);
     if (results.length) emit('recognize', true);
   } catch (error) {
     PROCESSING = false;
-    console.log('error hit');
+    console.log(`error hit: ${error.message}`);
     console.log(error);
     // res.send(error);
   }
